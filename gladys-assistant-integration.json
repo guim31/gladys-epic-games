@@ -8,8 +8,8 @@
     "de": "Die wöchentlichen Gratisspiele des Epic Games Store: Titel, Daten, Cover und ein Auslöser.",
     "es": "Los juegos gratis semanales de la Epic Games Store: títulos, fechas, carátulas y un disparador."
   },
-  "version": "1.0.0",
-  "docker_image": "ghcr.io/guim31/gladys-epic-games:1.0.0",
+  "version": "1.0.1",
+  "docker_image": "ghcr.io/guim31/gladys-epic-games:1.0.1",
   "gladys_version": ">=5.1.0",
   "cover_image": "https://raw.githubusercontent.com/guim31/gladys-epic-games/main/cover.png",
   "categories": ["multimedia", "services"],

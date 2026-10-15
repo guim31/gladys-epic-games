@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-15
+
 ### Added
 
 - An _Epic Games Store_ device: the free games of the moment and the end of
@@ -28,4 +30,5 @@ the notes of the version's GitHub Release.
   retried after a failure; the integration refreshes on its own, without
   relying on the Gladys polling.
 
-[Unreleased]: https://github.com/guim31/gladys-epic-games/commits/main
+[Unreleased]: https://github.com/guim31/gladys-epic-games/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/guim31/gladys-epic-games/releases/tag/v1.0.1

@@ -1,6 +1,6 @@
 {
   "name": "gladys-epic-games",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Gladys Assistant integration: the weekly free games of the Epic Games Store.",
   "type": "module",
