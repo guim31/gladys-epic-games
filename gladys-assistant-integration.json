@@ -1,177 +1,239 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "Epic Games Store",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "The weekly free games of the Epic Games Store: titles, dates, posters and a new-game trigger.",
+    "fr": "Les jeux offerts chaque semaine par l'Epic Games Store : titres, dates, affiches, déclencheur.",
+    "de": "Die wöchentlichen Gratisspiele des Epic Games Store: Titel, Daten, Cover und ein Auslöser.",
+    "es": "Los juegos gratis semanales de la Epic Games Store: títulos, fechas, carátulas y un disparador."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
+  "docker_image": "ghcr.io/guim31/gladys-epic-games:1.0.0",
   "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-epic-games/main/cover.png",
+  "categories": ["multimedia", "services"],
+  "transports": ["cloud"],
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "No account needed",
+        "fr": "Aucun compte nécessaire",
+        "de": "Kein Konto nötig",
+        "es": "No se necesita ninguna cuenta"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "The integration reads the public list of free games of the Epic Games Store, a few times a day and right after each change (Thursday, 17:00 Paris time). Add the device from the Discovery tab. Not affiliated with Epic Games.",
+        "fr": "L'intégration lit la liste publique des jeux gratuits de l'Epic Games Store, quelques fois par jour et juste après chaque changement (le jeudi à 17 h, heure de Paris). Ajoutez l'appareil depuis l'onglet Découverte. Sans lien avec Epic Games.",
+        "de": "Die Integration liest die öffentliche Liste der Gratisspiele des Epic Games Store, ein paarmal am Tag und direkt nach jedem Wechsel (donnerstags, 17 Uhr Pariser Zeit). Füge das Gerät im Tab „Entdecken“ hinzu. Keine Verbindung zu Epic Games.",
+        "es": "La integración lee la lista pública de juegos gratis de la Epic Games Store, varias veces al día y justo después de cada cambio (los jueves a las 17:00, hora de París). Añada el dispositivo desde la pestaña Descubrir. Sin relación con Epic Games."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://store.epicgames.com/free-games",
+          "label": {
+            "en": "Free games of the store",
+            "fr": "Jeux gratuits de la boutique",
+            "de": "Gratisspiele im Store",
+            "es": "Juegos gratis de la tienda"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
-      },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
-      "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
-    },
-    {
-      "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
-      "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
-      },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
-    },
-    {
-      "key": "unit",
+      "key": "language",
       "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
-      "required": false,
-      "default": "celsius",
+      "label": {
+        "en": "Language",
+        "fr": "Langue",
+        "de": "Sprache",
+        "es": "Idioma"
+      },
+      "description": {
+        "en": "Language of the device texts, of the scene variables and of the store titles and links.",
+        "fr": "Langue des textes de l'appareil, des variables de scène, des titres et des liens de la boutique.",
+        "de": "Sprache der Gerätetexte, der Szenenvariablen sowie der Titel und Links des Stores.",
+        "es": "Idioma de los textos del dispositivo, de las variables de escena y de los títulos y enlaces de la tienda."
+      },
+      "required": true,
+      "default": "fr",
       "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
+        {
+          "value": "en",
+          "label": { "en": "English", "fr": "Anglais", "de": "Englisch", "es": "Inglés" }
+        },
+        {
+          "value": "fr",
+          "label": { "en": "French", "fr": "Français", "de": "Französisch", "es": "Francés" }
+        },
+        {
+          "value": "de",
+          "label": { "en": "German", "fr": "Allemand", "de": "Deutsch", "es": "Alemán" }
+        },
+        {
+          "value": "es",
+          "label": { "en": "Spanish", "fr": "Espagnol", "de": "Spanisch", "es": "Español" }
+        }
       ]
     },
     {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
-      "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+      "key": "country",
+      "type": "string",
+      "label": {
+        "en": "Country",
+        "fr": "Pays",
+        "de": "Land",
+        "es": "País"
       },
-      "required": false,
-      "default": 300,
-      "min": 60,
-      "max": 3600
+      "description": {
+        "en": "Two-letter code of the store region: the free games can differ from one country to another.",
+        "fr": "Code de deux lettres de la région de la boutique : les jeux offerts peuvent varier selon le pays.",
+        "de": "Code aus zwei Buchstaben für die Store-Region: Die Gratisspiele können je nach Land abweichen.",
+        "es": "Código de dos letras de la región de la tienda: los juegos gratis pueden variar según el país."
+      },
+      "placeholder": {
+        "en": "e.g. FR",
+        "fr": "ex. FR",
+        "de": "z. B. DE",
+        "es": "p. ej. ES"
+      },
+      "required": true,
+      "default": "FR"
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
+      "key": "refresh",
+      "label": {
+        "en": "Refresh now",
+        "fr": "Actualiser maintenant",
+        "de": "Jetzt aktualisieren",
+        "es": "Actualizar ahora"
+      },
+      "description": {
+        "en": "Reads the store at once and lists the free games of the moment and the next ones.",
+        "fr": "Lit la boutique tout de suite et liste les jeux gratuits du moment et les suivants.",
+        "de": "Liest den Store sofort und zeigt die aktuellen und die nächsten Gratisspiele.",
+        "es": "Lee la tienda enseguida y muestra los juegos gratis del momento y los siguientes."
+      },
       "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ]
     }
   ],
   "scene_triggers": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
-      "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+      "key": "new_free_game",
+      "label": {
+        "en": "New free game available",
+        "fr": "Nouveau jeu gratuit disponible",
+        "de": "Neues Gratisspiel verfügbar",
+        "es": "Nuevo juego gratis disponible"
       },
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
-        },
-        {
-          "key": "target",
-          "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
-          "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
-          ]
-        }
-      ],
+      "description": {
+        "en": "A game just became free on the Epic Games Store: once per game, with title, end and link.",
+        "fr": "Un jeu vient de devenir gratuit sur l'Epic Games Store : une fois par jeu, avec titre, fin, lien.",
+        "de": "Ein Spiel ist im Epic Games Store gratis geworden: einmal pro Spiel, mit Titel, Ende und Link.",
+        "es": "Un juego acaba de ser gratis en la Epic Games Store: una vez por juego, con título, fin y enlace."
+      },
       "variables": [
         {
-          "key": "target",
+          "key": "title",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
-        }
-      ]
-    }
-  ],
-  "scene_actions": [
-    {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
-      },
-      "timeout_seconds": 15,
-      "fields": [
+          "label": {
+            "en": "Game title",
+            "fr": "Titre du jeu",
+            "de": "Spieltitel",
+            "es": "Título del juego"
+          }
+        },
         {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ],
-      "outputs": [
+          "key": "ends_at",
+          "type": "string",
+          "label": {
+            "en": "Free until (date and time)",
+            "fr": "Gratuit jusqu'au (date et heure)",
+            "de": "Gratis bis (Datum und Uhrzeit)",
+            "es": "Gratis hasta (fecha y hora)"
+          }
+        },
         {
-          "key": "signalled",
-          "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "key": "ends_at_iso",
+          "type": "string",
+          "label": {
+            "en": "Free until (ISO 8601)",
+            "fr": "Gratuit jusqu'au (ISO 8601)",
+            "de": "Gratis bis (ISO 8601)",
+            "es": "Gratis hasta (ISO 8601)"
+          }
+        },
+        {
+          "key": "url",
+          "type": "string",
+          "label": {
+            "en": "Store link",
+            "fr": "Lien vers la boutique",
+            "de": "Link zum Store",
+            "es": "Enlace a la tienda"
+          }
+        },
+        {
+          "key": "publisher",
+          "type": "string",
+          "label": { "en": "Publisher", "fr": "Éditeur", "de": "Publisher", "es": "Editor" }
+        },
+        {
+          "key": "original_price",
+          "type": "string",
+          "label": {
+            "en": "Usual price",
+            "fr": "Prix habituel",
+            "de": "Normaler Preis",
+            "es": "Precio habitual"
+          }
         }
       ]
     }
   ],
   "widgets": [
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "free_games",
+      "label": {
+        "en": "Epic free games",
+        "fr": "Jeux gratuits Epic",
+        "de": "Epic-Gratisspiele",
+        "es": "Juegos gratis de Epic"
       },
-      "icon": "activity",
-      "action_timeout_seconds": 15
+      "description": {
+        "en": "The free games of the moment and the next ones, with their posters and store links.",
+        "fr": "Les jeux gratuits du moment et les suivants, avec leurs affiches et liens vers la boutique.",
+        "de": "Die aktuellen und die nächsten Gratisspiele, mit Covern und Links zum Store.",
+        "es": "Los juegos gratis del momento y los siguientes, con sus carátulas y enlaces a la tienda."
+      },
+      "icon": "gift",
+      "settings": [
+        {
+          "key": "display",
+          "type": "select",
+          "label": { "en": "Display", "fr": "Affichage", "de": "Anzeige", "es": "Visualización" },
+          "default": "grid",
+          "options": [
+            {
+              "value": "grid",
+              "label": {
+                "en": "Poster grid",
+                "fr": "Grille d'affiches",
+                "de": "Cover-Raster",
+                "es": "Cuadrícula de carátulas"
+              }
+            },
+            {
+              "value": "list",
+              "label": { "en": "List", "fr": "Liste", "de": "Liste", "es": "Lista" }
+            }
+          ]
+        }
+      ]
     }
   ]
 }
