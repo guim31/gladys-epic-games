@@ -5,19 +5,20 @@ contributors.
 
 ## What this is
 
-A Gladys Assistant **external integration**: a Node.js service (Node 22+, ESM,
-no build step) that runs in its own sandboxed Docker container and talks to
-Gladys through
+A Gladys Assistant **external integration** for the weekly free games of the
+**Epic Games Store**: a Node.js service (Node 22+, ESM, no build step) that runs
+in its own sandboxed Docker container and talks to Gladys through
 [`@gladysassistant/integration-sdk`](https://github.com/GladysAssistant/integration-sdk-js),
-its only runtime dependency. It started from the official JavaScript template.
+its only runtime dependency. It started from the official JavaScript template;
+every demo device of the template is gone.
 
 ## Commands
 
 ```bash
 npm install
 npm test                                  # node --test, the built-in runner
-node --test test/devices.test.js          # one file
-node --test --test-name-pattern "plug"    # tests whose name matches
+node --test test/epic.test.js             # one file
+node --test --test-name-pattern "mystery" # tests whose name matches
 npm run lint                              # ESLint
 npm run format:check                      # Prettier, as the CI runs it
 npm run format                            # Prettier, fix in place
@@ -31,16 +32,23 @@ pushing.
 ## Architecture
 
 ```
-index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
-src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+index.js                          SDK wiring only: registerHandlers (src/app.js), then connect()
+src/app.js                        every SDK handler (shared with the tests)
+src/service.js                    own 1-minute ticker, store reads, states, scene trigger, status
+src/epic.js                       store client and parsing (free offers, mystery games, links)
+src/schedule.js                   when to read the store (6 h, after each switch, retries)
+src/device.js                     the one device, its features and states
+src/widgets.js                    the `free_games` widget content (pure)
+src/images.js                     widget posters: registry, CDN resizing, validation
+src/i18n.js                       every text, in en/fr/de/es
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
+src/store.js                      /data/epic-games-state.json (games already announced)
+src/issues.js                     repeated failures logged once
+scripts/probe.mjs                 read-only probe of the live store (run where the network allows)
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys, same sections
 test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+test/fixtures/epic/               real store answers, from the Home Assistant tests (Apache-2.0)
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -70,8 +78,10 @@ test/                             node --test, against the SDK's fake Gladys (in
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** is in four languages (English, French, German with
+  "du", Spanish with "usted"): action messages, manifest texts, widget texts,
+  feature names, and `docs/en.md`, `docs/fr.md`, `docs/de.md`, `docs/es.md`
+  with the same sections. `test/i18n.test.js` enforces it.
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -233,3 +243,51 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - Docs `en`, `fr`, `de`, `es` avec les mêmes sections.
 - Chauffe, ouverture, sécurité : ne rien rendre pilotable « comme un thermostat » ou par un assistant
   vocal quand une erreur serait dangereuse (leçon d'OctoPrint).
+
+## Propre à cette intégration (Epic Games Store)
+
+**API.** `GET https://store-site-backend-static.ak.epicgames.com/freeGamesPromotions?locale=<l>&country=<CC>&allowCountries=<CC>`,
+sans compte ni clé, servie par un CDN, non documentée par Epic. Réponse GraphQL :
+`data.Catalog.searchStore.elements[]`, chaque jeu avec `promotions.promotionalOffers` (en cours) et
+`upcomingPromotionalOffers` (à venir), groupes de `promotionalOffers[]` avec `startDate`, `endDate`,
+`discountSetting.discountPercentage` (le pourcentage **payé** : 0 = gratuit, 33 = −67 %). Aucun quota
+publié : l'intégration lit 6 à 8 fois par jour (src/schedule.js), avec un user agent identifiant.
+L'API est **injoignable depuis une session de code** (proxy 403) : tout est testé sur les fixtures de
+Home Assistant, et `node scripts/probe.mjs FR fr` vérifie la vraie réponse et les affiches ailleurs.
+
+**Pièges relevés dans les fixtures réelles**
+
+- Plusieurs offres superposées pour un même jeu, dans un ordre quelconque (Call of the Sea : 60 %,
+  0 %, 60 %) : lire **toutes** les offres à 0 %, pas la première comme Home Assistant.
+- La liste « en cours » / « à venir » de la réponse peut retarder sur le changement (cache CDN) :
+  classer par les **dates** contre l'horloge, à chaque minute.
+- `errors` peut accompagner des données utilisables (1004, `offerMappings` introuvable) : ne
+  rejeter que si `elements` manque (5222, pays inconnu, `searchStore: null`).
+- Jeux mystère (Noël, Mega Sale) : titre « Mystery Game… », `productSlug` « [] », pas de
+  `offerMappings`, image `VaultClosed` 16:9. Les traduire, lier la page `/free-games`, ne jamais les
+  annoncer avant leur révélation.
+- Les éléments `OTHERS` à `effectiveDate` 2099 sans promotion sont des emplacements du « coffre » :
+  ignorés (aucune offre).
+- Lien : `offerMappings[0].pageSlug`, sinon `catalogNs.mappings[0].pageSlug`, sinon `productSlug`
+  (parfois suffixé `/home`) ; `/bundles/` pour un `offerType` `BUNDLE`, `/p/` sinon. Locales de la
+  boutique : `en-US`, `es-ES`, `fr`, `de` (pas `en` ni `es` seuls).
+- Affiches de 1 à 3 Mo (1200×1600) : demandées au CDN avec `?h=480&quality=medium&resize=1&w=360`
+  (les paramètres des pages de la boutique ; **non vérifié depuis la session**, la sonde le
+  contrôle), puis 240×320, et validées par `validateWidgetImage` du SDK avant envoi. Seuls les hôtes
+  `*.epicgames.com` en https sont téléchargés.
+
+**Choix de conception**
+
+- Un seul appareil, `externalIds('store', 'free-games')` : changer de pays ou de langue garde
+  l'appareil. Quatre `text/text` et deux `counter-sensor/integer` (deux compteurs pour que le
+  tableau de bord affiche leurs noms et non le libellé générique du type).
+- `should_poll: true` à 60 000 ms gardé comme repli : le minuteur interne fait le travail, `onPoll`
+  ne déclenche un cycle que si le minuteur n'a pas tourné depuis 30 s.
+- Déclencheur `new_free_game` : une fois par `id@startDate`, jamais pour les jeux déjà gratuits à la
+  toute première lecture (« seeded », mémorisé dans `/data` avec le pays) ; changer de pays repart
+  de zéro. Pas d'action de scène : elle doublonnerait les états de l'appareil.
+- Heartbeat de 6 h via `publishChangedStates({ heartbeat })` (le SDK date avec `Date.now()` : les
+  tests le simulent avec `t.mock.timers`).
+- Catégories du store : pas de « jeux » dans le vocabulaire ; `multimedia` et `services`.
+- Dans un test, `mkdir` récursif sous `/proc` **bloque** Node au lieu d'échouer : simuler un `/data`
+  non inscriptible par un dossier sous un fichier ordinaire (ENOTDIR).

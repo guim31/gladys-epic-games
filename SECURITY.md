@@ -30,6 +30,19 @@ Gladys before reporting a problem.
 
 In scope: the code of this repository and the Docker image it publishes.
 
+What the integration handles:
+
+- **No secret.** No account, no password, no API key: the configuration holds
+  a language and a country code.
+- **`/data`** holds one file, `epic-games-state.json`: the identifiers of the
+  free games already announced to the scenes, and the country they were read
+  for. Nothing personal.
+- **Network**: outbound HTTPS only, to
+  `store-site-backend-static.ak.epicgames.com` (the free games list) and to
+  `*.epicgames.com` (the posters of the widget). The poster URLs come from the
+  store's answer: the integration fetches them only over https and only on an
+  Epic host, without credentials, with a size cap. It listens on no port.
+
 Out of scope: Gladys Assistant itself (see its
 [security policy](https://github.com/GladysAssistant/Gladys/security/policy)),
-and the third-party services and devices the integration talks to.
+and the Epic Games Store and its services.
